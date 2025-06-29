@@ -26,6 +26,7 @@
     "@aws-sdk/client-bedrock-runtime": "^3.839.0",
     "@smithy/node-http-handler": "^4.0.0",
     "aws-cdk-lib": "2.201.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "lambda-multipart-parser": "^1.0.1"
   }
 }

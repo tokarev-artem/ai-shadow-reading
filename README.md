@@ -22,6 +22,7 @@ An interactive web application that helps users improve their English pronunciat
 
 2. **Backend Services**
    - **API Gateway**: Routes requests to appropriate Lambda functions
+   - **Lambda functions**: To generate text with Amazon Bedrock, analyze pronunciation with Amazon Transcribe, and generate audio with Amazon Polly
    - **Generate Text Lambda**: Uses Amazon Bedrock to generate practice texts
    - **Analysis Lambda**: Handles audio processing and pronunciation analysis
    - **S3 Bucket**: Stores audio recordings and transcription results
@@ -46,12 +47,20 @@ npm install
 cdk deploy
 ```
 
-### Frontend Development
-```bash
-# Run local dev server
-python3 -m http.server 8000
+## Update Frontend API Endpoint
+
+Update the `API_ENDPOINT` variable in `frontend/app.js` with the API Gateway endpoint from the deployment output. Line 39
+
+```
+- const API_ENDPOINT = '<API_GATEWAY_ENDPOINT>';
++ const API_ENDPOINT = 'https://abc123.execute-api.us-east-1.amazonaws.com/';
 ```
 
+## And deploy infrastructure again to apply frontend changes
+
+```
+cdk deploy
+```
 ## Key Features
 
 - **Text Generation**:
