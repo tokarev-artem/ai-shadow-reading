@@ -1,0 +1,96 @@
+# AI Shadow Reading
+
+An interactive web application that helps users improve their English pronunciation by:
+1. Generating practice texts
+2. Providing native speaker audio samples
+3. Recording and analyzing user pronunciation
+4. Giving feedback on pronunciation accuracy
+
+## Architecture Diagram
+![Architecture Diagram](img/diagram.png)
+![Main page](img/main.jpg)
+
+### Key Components:
+
+1. **Frontend (Static Web App)**
+   - Built with HTML, CSS, and vanilla JavaScript
+   - Hosted on S3 with CloudFront CDN
+   - Features:
+     - Text generation interface
+     - Audio recording capabilities
+     - Pronunciation analysis feedback
+
+2. **Backend Services**
+   - **API Gateway**: Routes requests to appropriate Lambda functions
+   - **Generate Text Lambda**: Uses Amazon Bedrock to generate practice texts
+   - **Analysis Lambda**: Handles audio processing and pronunciation analysis
+   - **S3 Bucket**: Stores audio recordings and transcription results
+
+3. **AI Services**
+   - **Amazon Bedrock (Titan Text)**: Generates practice texts based on topics/difficulty
+   - **Amazon Transcribe**: Converts user speech to text for pronunciation analysis
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+
+- AWS CDK 2.x
+- AWS CLI configured with credentials
+
+### Deployment
+```bash
+# Install dependencies
+npm install
+
+# Deploy infrastructure
+cdk deploy
+```
+
+### Frontend Development
+```bash
+# Run local dev server
+python3 -m http.server 8000
+```
+
+## Key Features
+
+- **Text Generation**:
+  - Custom topics and difficulty levels
+  - Random text generation
+  - Integration with Amazon Bedrock
+
+- **Pronunciation Analysis**:
+  - Web-based audio recording
+  - Speech-to-text conversion
+  - Word-level pronunciation scoring
+  - Detailed feedback report
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `RECORDINGS_BUCKET` | S3 bucket for audio storage |
+| `TRANSCRIBE_REGION` | AWS region for Transcribe service |
+| `TRANSCRIBE_ROLE_ARN` | IAM role for Transcribe jobs |
+
+## API Endpoints
+
+- `POST /generate-text` - Generate practice text
+- `POST /analyze` - Analyze pronunciation
+- `GET /shadow-reading` - Get shadow reading content
+
+## Development Commands
+
+* `npm run build`   compile typescript to js
+* `npm run watch`   watch for changes and compile
+* `npm run test`    perform the jest unit tests
+* `npx cdk deploy`  deploy this stack to your default AWS account/region
+* `npx cdk diff`    compare deployed stack with current state
+* `npx cdk synth`   emits the synthesized CloudFormation template
+
+## Future Enhancements
+
+- Real-time pronunciation feedback
+- Multi-language support
+- Progress tracking
+- Mobile app version

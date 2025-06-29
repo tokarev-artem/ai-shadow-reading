@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Shadow Reading</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>AI Shadow Reading</h1>
+    
+    <button id="useTextBtn" class="active">Use Your Text</button>
+    <button id="generateTextBtn">Generate Text</button>
+    
+    <div id="textGenerationControls" style="display: none;">
+      <select id="topicSelect">
+        <option value="daily_life">Daily Life</option>
+        <option value="travel">Travel</option>
+        <option value="technology">Technology</option>
+      </select>
+      <select id="difficultySelect">
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+      <button id="randomTextBtn">Generate Random Text</button>
+    </div>
+    
+    <textarea id="textInput" placeholder="Enter or generate text here..."></textarea>
+    
+    <select id="voiceSelect">
+      <option value="Ruth">Ruth (Female)</option>
+      <option value="Danielle">Danielle (Female)</option>
+      <option value="Gregory">Gregory (Male)</option>
+      <option value="Patrick">Patrick (Male)</option>
+    </select>
+    
+    <label for="pauseDuration">Pause Duration (seconds):</label>
+    <input type="number" id="pauseDuration" value="0.5" min="0" step="0.1">
+    
+    <button id="generateBtn"><i class="fas fa-play"></i> Generate Speech</button>
+    
+    <div>
+      <label for="speedControl">Playback Speed:</label>
+      <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
+      <span id="speedValue">1x</span>
+    </div>
+    
+    <audio id="audioPlayer" controls></audio>
+    <div id="textDisplay"></div>
+    <button id="repeatBtn"><i class="fas fa-redo"></i> Repeat Last 3s</button>
+    
+    <button id="recordBtn"><i class="fas fa-microphone"></i> Start Practice</button>
+    <div id="recordingStatus">
+      <span class="recording-dot"></span>
+      <span>Recording...</span>
+    </div>
+    
+    <div id="recordingControls">
+      <audio id="recordingPlayer" controls></audio>
+      <button id="saveRecordingBtn"><i class="fas fa-save"></i> Save Recording</button>
+      <button id="analyzeBtn"><i class="fas fa-chart-bar"></i> Analyze</button>
+    </div>
+    
+    <div id="analysisModal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="scoreValue">0</div>
+        <div id="feedbackText"></div>
+        <div id="wordScores"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="app.js"></script>
+</body>
+</html>
