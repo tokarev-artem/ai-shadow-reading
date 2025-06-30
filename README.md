@@ -43,6 +43,9 @@ An interactive web application that helps users improve their English pronunciat
 # Install dependencies
 npm install
 
+# Bootstrap account
+cdk bootstrap
+
 # Deploy infrastructure
 cdk deploy
 ```
