@@ -1,5 +1,7 @@
 # AI Shadow Reading
 
+## Shadow reading, also known as shadow listening or shadowing, is a language learning technique where a learner simultaneously listens to and reads a text aloud, essentially mimicking the speaker's voice. It's a form of oral practice that can improve pronunciation, fluency, and confidence in speaking a new language. 
+
 An interactive web application that helps users improve their English pronunciation by:
 1. Generating practice texts
 2. Providing native speaker audio samples
@@ -22,8 +24,8 @@ An interactive web application that helps users improve their English pronunciat
 
 2. **Backend Services**
    - **API Gateway**: Routes requests to appropriate Lambda functions
-   - **Lambda functions**: To generate text with Amazon Bedrock, analyze pronunciation with Amazon Transcribe, and generate audio with Amazon Polly
    - **Generate Text Lambda**: Uses Amazon Bedrock to generate practice texts
+   - **Generate Audio Lambda**: Uses Amazon Polly to generate audio from text
    - **Analysis Lambda**: Handles audio processing and pronunciation analysis
    - **S3 Bucket**: Stores audio recordings and transcription results
 

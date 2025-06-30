@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const API_ENDPOINT = 'https://681ap8gn9i.execute-api.us-east-1.amazonaws.com/';
+  const API_ENDPOINT = '<API_GATEWAY_ENDPOINT>';
 
   let mediaRecorder;
   let audioChunks = [];
