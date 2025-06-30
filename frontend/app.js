@@ -15,16 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const generateBtn = getElement('generateBtn');
   const audioPlayer = getElement('audioPlayer');
   const textDisplay = getElement('textDisplay');
-  const pauseDuration = getElement('pauseDuration');
+  // const pauseDuration = getElement('pauseDuration');
   const repeatBtn = getElement('repeatBtn');
   const speedControl = getElement('speedControl');
   const speedValue = getElement('speedValue');
   const recordBtn = getElement('recordBtn');
   const recordingPlayer = getElement('recordingPlayer');
   const recordingControls = getElement('recordingControls');
-  const analyzeBtn = getElement('analyzeBtn');
-  const saveRecordingBtn = getElement('saveRecordingBtn');
   const recordingStatus = getElement('recordingStatus');
+  const analyzeBtn = getElement('analyzeBtn');
   const analysisModal = getElement('analysisModal');
   const closeModal = document.querySelector('.close-modal');
   const scoreValue = getElement('scoreValue');
@@ -99,14 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const text = textInput.value.trim();
         const voiceId = voiceSelect.value;
-        const pauseSec = parseFloat(pauseDuration.value);
+        // const pauseSec = parseFloat(pauseDuration.value);
 
         if (!text) {
           alert('Please enter or generate text.');
           return;
         }
 
-        const ssml = addPausesToText(text, pauseSec);
+        const ssml = addPausesToText(text);
+        console.log('Generated SSML:', ssml); // Debug SSML
         const response = await fetch(`${API_ENDPOINT}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -116,12 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) throw new Error('Failed to generate speech');
 
         const { audio, speechMarks } = await response.json();
+        console.log('Speech Marks:', speechMarks); // Debug speech marks
         const audioBlob = new Blob([Uint8Array.from(atob(audio), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
         const audioUrl = URL.createObjectURL(audioBlob);
         audioPlayer.src = audioUrl;
 
         setupKaraokeWithSpeechMarks(text, speechMarks);
         syncHighlightWithSpeechMarks(audioPlayer, speechMarks);
+
+        // Ensure audio is preloaded before playing
+        audioPlayer.addEventListener('canplaythrough', () => {
+          audioPlayer.play().catch(err => console.error('Playback failed:', err));
+        }, { once: true });
 
       } catch (error) {
         alert('Error generating speech');
@@ -154,35 +160,60 @@ document.addEventListener('DOMContentLoaded', () => {
     textDisplay.innerHTML = displayWords.map((word, i) =>
       `<span class="word" data-index="${i}">${word}</span>`
     ).join(' ');
-    window._speechMarks = speechMarks.filter(m => m.type === 'word');
+    window._speechMarks = speechMarks.filter(m => m.type === 'word' || m.type === 'ssml');
   }
 
   function syncHighlightWithSpeechMarks(audio, speechMarks) {
     const wordElements = document.querySelectorAll('.word');
-    const marks = speechMarks.filter(m => m.type === 'word');
+    const marks = speechMarks.filter(m => m.type === 'word' || m.type === 'ssml');
     let lastIdx = -1;
+    let playbackOffset = 0;
 
-    function highlight() {
-      if (!audio.paused && marks.length > 0) {
+    // Estimate playback offset
+    audio.addEventListener('play', () => {
+      const startTime = performance.now();
+      audio.addEventListener('playing', () => {
+        playbackOffset = performance.now() - startTime;
+        console.log('Playback offset:', playbackOffset);
+        highlightWord(0);
+      }, { once: true });
+    });
+
+    function highlightWord(idx) {
+      if (idx >= marks.length || audio.paused) return;
+      wordElements.forEach(w => w.classList.remove('highlight', 'pause-active'));
+
+      if (marks[idx].type === 'word' && wordElements[idx]) {
+        wordElements[idx].classList.add('highlight');
+        console.log(`Highlighting word ${idx} at audio time ${audio.currentTime}s, mark time ${marks[idx].time / 1000}s`);
+      } else if (marks[idx].type === 'ssml' && wordElements[lastIdx]) {
+        wordElements[lastIdx].classList.add('pause-active');
+      }
+
+      lastIdx = idx;
+
+      const nextIdx = idx + 1;
+      if (nextIdx < marks.length) {
         const currentTimeMs = audio.currentTime * 1000;
-        let idx = marks.findIndex((m, i) =>
-          i === marks.length - 1
-            ? currentTimeMs >= m.time
-            : currentTimeMs >= m.time && currentTimeMs < marks[i + 1].time
-        );
-        if (idx === -1 && currentTimeMs >= marks[marks.length - 1].time) {
-          idx = marks.length - 1;
-        }
-        if (idx !== lastIdx && idx >= 0) {
-          wordElements.forEach(w => w.classList.remove('highlight'));
-          if (wordElements[idx]) wordElements[idx].classList.add('highlight');
-          lastIdx = idx;
+        const nextTime = (marks[nextIdx].time / audio.playbackRate) - playbackOffset;
+        const delay = nextTime - (currentTimeMs / audio.playbackRate);
+        if (delay > 0) {
+          setTimeout(() => highlightWord(nextIdx), delay);
+        } else {
+          highlightWord(nextIdx); // Immediate transition if delay is negative
         }
       }
-      requestAnimationFrame(highlight);
     }
-    audio.addEventListener('play', () => requestAnimationFrame(highlight));
-    audio.addEventListener('seeked', () => { lastIdx = -1; });
+
+    audio.addEventListener('seeked', () => {
+      lastIdx = -1;
+      wordElements.forEach(w => w.classList.remove('highlight', 'pause-active'));
+      const currentTimeMs = (audio.currentTime * 1000) / audio.playbackRate;
+      const idx = marks.findIndex(m => currentTimeMs >= (m.time / audio.playbackRate) - playbackOffset);
+      if (idx >= 0) {
+        highlightWord(idx);
+      }
+    });
   }
 
   async function toggleRecording() {
@@ -222,7 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
   recordBtn.addEventListener('click', toggleRecording);
 
   analyzeBtn.addEventListener('click', analyzeRecording);
-  saveRecordingBtn.addEventListener('click', saveRecording);
 
   async function analyzeRecording() {
     if (!currentRecording) {
@@ -352,40 +382,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return 'poor';
   }
 
-  async function saveRecording() {
-    if (!currentRecording) return;
-
-    try {
-      saveRecordingBtn.disabled = true;
-      saveRecordingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-
-      const formData = new FormData();
-      formData.append('audio', currentRecording, 'recording.webm');
-      formData.append('text', textInput.value.trim());
-      formData.append('voice', voiceSelect.value);
-
-      const response = await fetch(`${API_ENDPOINT}/recordings`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) throw new Error('Save failed');
-
-      alert('Recording saved successfully!');
-
-    } catch (error) {
-      console.error('Save error:', error);
-      alert('Failed to save recording. Please try again.');
-    } finally {
-      saveRecordingBtn.disabled = false;
-      saveRecordingBtn.innerHTML = '<i class="fas fa-save"></i> Save Recording';
-    }
-  }
-
-  function addPausesToText(text, pauseSec) {
+  function addPausesToText(text) {
     const phrases = text.split(/(?<=[.!?,])\s+/);
     return phrases.map(phrase => {
-      const pauseMs = pauseSec * 1000;
+      const pauseMs = 1000;
       if (phrase.trim().endsWith(',')) {
         return `${phrase}<break time="${pauseMs/2}ms"/>`;
       } else if (phrase.trim().endsWith('.') || 
