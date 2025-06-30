@@ -37,7 +37,7 @@ An interactive web application that helps users improve their English pronunciat
 - Node.js 18+
 - AWS CDK 2.x
 - AWS CLI configured with credentials
-
+- Access to AWS Bedrock model `amazon.titan-text-express-v1`
 ### Deployment
 ```bash
 # Install dependencies
