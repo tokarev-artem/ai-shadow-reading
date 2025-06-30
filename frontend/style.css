@@ -95,6 +95,19 @@ button.active {
 #recordingControls {
   display: none;
   margin: 10px 0;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#recordingControls audio {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+#recordingControls button {
+  width: 100%;
+  max-width: 200px;
+  margin: 5px 0;
 }
 
 #analysisModal {
@@ -154,13 +167,15 @@ button.active {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: conic-gradient(# noncompliance 28a745 calc(var(--score) * 3.6deg), #e9ecef calc(var(--score) * 3.6deg));
+  background: linear-gradient(135deg, #007bff, #00bfff);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 10px;
-  position: relative;
-  --score: attr(data-score number, 0);
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .score-circle span {

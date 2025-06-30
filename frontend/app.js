@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const API_ENDPOINT = '<API_GATEWAY_ENDPOINT>';
+  const API_ENDPOINT = 'https://681ap8gn9i.execute-api.us-east-1.amazonaws.com/';
 
   let mediaRecorder;
   let audioChunks = [];
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     animateValue('scoreValue', 0, results.data.score, 1000);
-    feedbackText.textContent = results.data.feedback;
+    // feedbackText.textContent = results.data.feedback.replace(/^\d+\s*/, '');
 
     // Group words by score ranges
     const wordScoresData = results.data.wordScores?.filter(word => !['.', ','].includes(word.word)) || [];
@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>${results.data.score}</span>
         </div>
         <h3>Pronunciation Analysis</h3>
-        <p class="feedback">${results.data.feedback}</p>
+        <p class="feedback">${results.data.feedback.replace(/^\d+\s*/, '')}</p>
       </div>
       <div class="word-scores-container">
         ${excellent.length ? `
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="word-score excellent" role="listitem">
                 <span class="word">${word.word}</span>
                 <span class="score">${word.score}%</span>
-                ${word.feedback && word.feedback !== 'Good pronunciation' ? `<div class="word-feedback">${word.feedback}</div>` : ''}
+                ${word.feedback && word.feedback !== 'Good pronunciation' ? `<div class="word-feedback">${word.feedback.replace(/^\d+\s*/, '')}</div>` : ''}
               </div>
             `).join('')}
           </div>
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="word-score good" role="listitem">
                 <span class="word">${word.word}</span>
                 <span class="score">${word.score}%</span>
-                ${word.feedback && word.feedback !== 'Good pronunciation' ? `<div class="word-feedback">${word.feedback}</div>` : ''}
+                ${word.feedback && word.feedback !== 'Good pronunciation' ? `<div class="word-feedback">${word.feedback.replace(/^\d+\s*/, '')}</div>` : ''}
               </div>
             `).join('')}
           </div>
@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="word-score needs-improvement" role="listitem">
                 <span class="word">${word.word}</span>
                 <span class="score">${word.score}%</span>
-                ${word.feedback ? `<div class="word-feedback">${word.feedback}</div>` : ''}
+                ${word.feedback ? `<div class="word-feedback">${word.feedback.replace(/^\d+\s*/, '')}</div>` : ''}
               </div>
             `).join('')}
           </div>
